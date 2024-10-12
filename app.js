@@ -1,10 +1,19 @@
 const express = require('express');
 const { exec } = require('child_process');
-const fs = require('fs');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+    res.send(`
+        <h1>YouTube Video Downloader</h1>
+        <form action="/download" method="get">
+            <input type="text" name="url" placeholder="Enter YouTube Video URL" required>
+            <button type="submit">Download</button>
+        </form>
+    `);
+});
 
 app.get('/download', (req, res) => {
     const videoUrl = req.query.url;
@@ -16,7 +25,7 @@ app.get('/download', (req, res) => {
     const videoPath = path.join(__dirname, 'video.mp4'); // Temporary file path
 
     // Use yt-dlp to download the best video and audio available
-    exec(`yt-dlp -f "best" -o "${videoPath}" ${videoUrl}`, (error, stdout, stderr) => {
+    exec(`yt-dlp -f "best" -o "${videoPath}" "${videoUrl}"`, (error, stdout, stderr) => {
         if (error) {
             console.error(`Error downloading video: ${stderr}`);
             return res.status(500).send('An error occurred while downloading the video.');
@@ -27,13 +36,7 @@ app.get('/download', (req, res) => {
             if (err) {
                 console.error(`Error sending video file: ${err}`);
             }
-
-            // Check if the file exists before deleting
-            if (fs.existsSync(videoPath)) {
-                fs.unlinkSync(videoPath); // Delete the temporary video file
-            } else {
-                console.error('File not found for deletion:', videoPath);
-            }
+            // Optionally delete the video file after download
         });
     });
 });
