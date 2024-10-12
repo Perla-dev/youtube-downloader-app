@@ -2,15 +2,16 @@
   "name": "youtube-downloader",
   "version": "1.0.0",
   "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "ytdl-core": "^4.9.1"
+  },
   "scripts": {
     "start": "node app.js"
   },
-  "author": "yuma mizu",
-  "description": "A simple app to download YouTube videos.",
-  "dependencies": {
-    "express": "^4.17.1"
-  },
   "engines": {
     "node": ">=14.0.0"
-  }
+  },
+  "author": "yuma mizu",
+  "description": "A simple app to download YouTube videos."
 }
