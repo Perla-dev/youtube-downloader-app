@@ -1,8 +1,7 @@
 const express = require('express');
 const { exec } = require('child_process');
 const path = require('path');
-const youtubedl = require('youtube-dl-exec');
-
+const fs = require('fs'); // Ensure fs is required for file handling
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,13 +25,18 @@ app.get('/download', async (req, res) => {
 
     const videoPath = path.join(__dirname, 'video.mp4'); // Temporary file path
 
-    // Use yt-dlp to download the best video and audio available
-    
     try {
-        // Use youtube-dl-exec to download the best video and audio available
-        await youtubedl(videoUrl, {
-            output: videoPath,
-            format: 'best'
+        // Use child_process exec to execute yt-dlp command line directly
+        await new Promise((resolve, reject) => {
+            exec(`yt-dlp -f "best" -o "${videoPath}" ${videoUrl}`, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`Error downloading video: ${stderr}`);
+                    reject(error);
+                } else {
+                    console.log(`Downloaded video successfully: ${stdout}`);
+                    resolve();
+                }
+            });
         });
 
         // After download completes, send the video as a file download
